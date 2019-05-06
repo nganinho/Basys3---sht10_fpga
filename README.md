@@ -17,3 +17,6 @@ Carrying the SCK and DATA signal parallel and in close proximity (e.g. in wires)
 
 4. Add reset sequence. [AI] --> Change code.
 It is unsured that the device can operate normally after starting from system reset. It should be "transmission reset" from beginning of a data communication.
+
+5. [Thold and Tsetup of data from FPGA]
+--> check again the code to make sure it follow the timing specification of the spec to the IC.
