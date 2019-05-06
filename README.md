@@ -20,3 +20,9 @@ It is unsured that the device can operate normally after starting from system re
 
 5. [Thold and Tsetup of data from FPGA]
 --> check again the code to make sure it follow the timing specification of the spec to the IC.
+
+6. Timing violation of RH calculation logic.
+--> when we have the temperature done, we will fix the RH.
+
+7. communication error logic: [AI]
+--> detect the Non-ACK from Sensor. If there is one, turn the Erorr indicator led on.
