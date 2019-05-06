@@ -18,7 +18,7 @@ Carrying the SCK and DATA signal parallel and in close proximity (e.g. in wires)
 4. Add reset sequence. [AI] --> Change code.
 It is unsured that the device can operate normally after starting from system reset. It should be "transmission reset" from beginning of a data communication.
 
-5. [Thold and Tsetup of data from FPGA]
+5. Thold and Tsetup of data from FPGA: [AI]
 --> check again the code to make sure it follow the timing specification of the spec to the IC.
 
 6. Timing violation of RH calculation logic.
@@ -26,3 +26,8 @@ It is unsured that the device can operate normally after starting from system re
 
 7. communication error logic: [AI]
 --> detect the Non-ACK from Sensor. If there is one, turn the Erorr indicator led on.
+
+8. DATA timing. 
+--> Write Data from FPGA is available same timing with clock pulse. Notice about the Tsu and Thd
+--> Read Data from Sensor is available 1 pusle later. Take note when capturing data from sensor.
+
