@@ -357,7 +357,7 @@ always @ ( posedge clock or posedge reset) begin
 			`ADD_TRAN: 								data_out 	<= 	add_code[2-cyc_cnt];
 			`CMD_TRAN: 	if (temp_rh_sel == 1'b0 ) 	data_out 	<= 	cmd_temp[4-cyc_cnt];
 						else 						data_out	<= 	cmd_rh[4-cyc_cnt];
-			`DATA_ACK1, 
+			`DATA_ACK1:								data_out    <=  1'b0; 
 			`DATA_ACK2: 							data_out	<= 	crc_off; // ACK decide the CRC check existence.
 			`CHECK_ACK: 							data_out	<= 	1'b1;
 			default: 								data_out 	<= 	1'b1;
@@ -399,7 +399,7 @@ end
 
 // TEMP
 // T = d1 + d2 * SOtemp;
-//VDD 	d1 (째C) d1 (째F) 	SOT 		d2 (째C) d2 (째F)
+//VDD 	d1 (걢C) d1 (걢F) 	SOT 		d2 (걢C) d2 (걢F)
 //5V 	-40.1 	-40.2 		14bit 		0.01 	0.018
 //4V 	-39.8 	-39.6 		12bit 		0.04 	0.072
 //3.5V 	-39.7 	-39.5
