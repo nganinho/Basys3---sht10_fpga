@@ -31,3 +31,7 @@ It is unsured that the device can operate normally after starting from system re
 --> Write Data from FPGA is available same timing with clock pulse. Notice about the Tsu and Thd
 --> Read Data from Sensor is available 1 pusle later. Take note when capturing data from sensor.
 
+9. ACK1 has wrong level .
+--> It should be LOW instead of HIGH.
+
+
