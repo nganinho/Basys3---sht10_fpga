@@ -79,18 +79,27 @@ initial begin
     
     // MEASURE TIME:
     wait (dut.state == 4'd6 );  SDA_in = 1'b1; 
-    #(10*1000*10);                SDA_in = 1'b0;
+    #(10*1000*10);              SDA_in = 1'b0;
      
     // MSB 
-    wait (dut.state == 4'd8 );  SDA_in = 1'b1; 
+    wait (dut.state == 4'd8 );  
+	repeat (6) begin
+		@ (negedge SCK );
+		#(5000/2);
+		SDA_in = 1'b1;
+	end
     
     // DATA MSB ACK
-    wait (dut.state == 4'd9 ); SDA_in = 1'b0;
-    #(1000*10);                   SDA_in = 1'b1;
+    wait (dut.state == 4'd9 );  SDA_in = 1'b0;
+    #(1000*10);                 SDA_in = 1'b1;
         
     // DATA LSB ACK
-    wait (dut.state == 4'd11 ); SDA_in = 1'b0;
-    #(1000*10);                   SDA_in = 1'b1;
+    wait (dut.state == 4'd10 );  
+	repeat (8) begin
+		@ (negedge SCK );
+		#(5000/2);
+		SDA_in = $random();
+	end
         
 end
 
