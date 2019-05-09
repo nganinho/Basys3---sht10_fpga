@@ -102,7 +102,7 @@ reg measure_, measure__;
 reg [11:0] RH;
 reg [13:0] TEMP;
 
-pullup (SDA);   
+//pullup (SDA);   
 
 assign add_code = 3'b000;
 assign cmd_temp = 5'b00011;
@@ -129,7 +129,7 @@ assign SDA 		= ( sda_out_en  ) ? data_out : 1'bz;
 // clk_equal
 always @ (*) begin 
 	case (state) 
-		`TRAN_START: 	if ( clk_cnt == (3*`TLOW/2 + 2*`THIGH)) clk_equal 	= 1'b1; 
+		`TRAN_START: 	if ( clk_cnt == (2*`TLOW + 10*`THIGH )) clk_equal 	= 1'b1; 
 						else 								  clk_equal 	= 1'b0;
 		default: 		if ( clk_cnt == `TCYCLE ) 			  clk_equal	= 1'b1;
 						else 								  clk_equal 	= 1'b0;
@@ -222,6 +222,7 @@ always @ ( posedge clock or posedge reset ) begin
 	else begin
 	   case (state)
 	       `TRAN_START,
+	       `CONN_RESET,
 	       `ADD_TRAN,
 	       `CMD_TRAN,
 	       `CMD_ACK,
@@ -248,10 +249,11 @@ end
 // next state
 always @ (*) begin 
 	case (state)
-		`IDLE		: 	if ( get_sensor == 1'b1) begin
-							if ( reset_conn == 1'b1 ) next 	= 	`CONN_RESET;
-							else 					  next 	= 	`TRAN_START;
-						end
+		`IDLE		: 	if ( get_sensor == 1'b1)    next   = `CONN_RESET;
+		                  
+							//if ( reset_conn == 1'b1 ) next 	= 	`CONN_RESET;
+							//else 					  next 	= 	`TRAN_START;
+						//end
 						else						next 	= 	`IDLE;
 		`CONN_RESET	: 	if ( state_end == 1'b1) 	next 	= 	`TRAN_START;
 						else						next 	= 	`CONN_RESET;
@@ -326,8 +328,9 @@ always @ (posedge clock or posedge reset ) begin
     end
     else begin
         case (state)
-            `TRAN_START:  if  ((clk_cnt < `THIGH) || ((clk_cnt > `TCYCLE) && (clk_cnt < `TCYCLE + `THIGH))) SCK <=  1'b1;
+            `TRAN_START:  if  ((clk_cnt > `TLOW/2 && clk_cnt < (`TLOW/2 + 3*`THIGH)) || ((clk_cnt > (3*`THIGH + `TLOW + `TLOW/2)) && (clk_cnt < 3*`TLOW/2 + 6*`THIGH))) SCK <=  1'b1;
                           else     SCK <=  1'b0;
+            `CONN_RESET,
             `ADD_TRAN,
 			`CMD_TRAN,
 			`CMD_ACK,
@@ -352,7 +355,7 @@ always @ ( posedge clock or posedge reset) begin
 	end
 	else begin 
 		case (state )
-		    `TRAN_START: if (clk_cnt > `THIGH/2 && clk_cnt < (`TCYCLE + `THIGH/2))    data_out <= 1'b0;
+		    `TRAN_START: if (clk_cnt > 2*`THIGH && clk_cnt < (4*`THIGH + `TLOW/2 + `TLOW))    data_out <= 1'b0;
 		                 else                                                         data_out <= 1'b1;
 		                       
 			`ADD_TRAN: 								data_out 	<= 	add_code[2-cyc_cnt];
@@ -375,15 +378,15 @@ always @ ( posedge clock or posedge reset ) begin
 	else begin
 		if (state == `DATA_MSB ) begin 
 			if ( temp_rh_sel == 1'b1 ) 	begin
-			     if (clk_cnt == 3*`THIGH/2)      dat_rh[11-cyc_cnt] 	  <= SDA;
+			     if (clk_cnt == `TCYCLE/2)      dat_rh[11-cyc_cnt] 	  <= SDA;
 			end
 			else begin
-			     if (clk_cnt == 3*`THIGH/2)      dat_temp[13-cyc_cnt] 	  <= SDA;
+			     if (clk_cnt == `TCYCLE/2)      dat_temp[13-cyc_cnt] 	  <= SDA;
 			end
 		end
 		else begin
 			if (state == `DATA_LSB ) begin
-			   if (clk_cnt == 3*`THIGH/2) begin
+			   if (clk_cnt == `TCYCLE/2) begin
 				if ( temp_rh_sel == 1'b1 ) 	dat_rh[7-cyc_cnt] 	<= SDA;
 				else 						dat_temp[7-cyc_cnt]	<= SDA;
 		     end
@@ -400,7 +403,7 @@ end
 
 // TEMP
 // T = d1 + d2 * SOtemp;
-//VDD 	d1 (‹C) d1 (‹F) 	SOT 		d2 (‹C) d2 (‹F)
+//VDD 	d1 (?‹C) d1 (?‹F) 	SOT 		d2 (?‹C) d2 (?‹F)
 //5V 	-40.1 	-40.2 		14bit 		0.01 	0.018
 //4V 	-39.8 	-39.6 		12bit 		0.04 	0.072
 //3.5V 	-39.7 	-39.5
@@ -421,14 +424,18 @@ always @ (posedge clock or posedge reset ) begin
 	end
 end
 
+wire [3:0] first, second;
+assign first  =  TEMP%10;
+assign second =  TEMP/10; 
+
 // 7segment of display
 seven_seg display (
     clock,
     reset,
-    TEMP[3:0],
-    TEMP[7:4],
-    TEMP[11:8],
-    {2'b00,TEMP[13:12]},
+    4'hC,
+    4'hA,
+    first,
+    second,
     anode,
     led_code
 );

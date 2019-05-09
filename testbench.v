@@ -69,7 +69,7 @@ end
 initial begin
     #10000; reset = 1'b1;
     #100; reset = 1'b0;
-    #100;
+    #10000;
     
     start = 1'b1;
     // CMD ACK
@@ -93,7 +93,7 @@ initial begin
     wait (dut.state == 4'd9 );  SDA_in = 1'b0;
     #(1000*10);                 SDA_in = 1'b1;
         
-    // DATA LSB ACK
+    // DATA LSB 
     wait (dut.state == 4'd10 );  
 	repeat (8) begin
 		@ (negedge SCK );
