@@ -1,3 +1,14 @@
+#Feature
+  1. Temperature: Yes
+  2. Huminity: No
+  3. Communication Error indicator: Yes 
+  4. Display: 7segments Leds
+  5. Temp resolution: 14bit
+  6. dspclk: 100Mhz 
+  7. Sensor clock: 100Khz
+  8. Measurement frequency: Button base trigger
+  9. Status register access: No (Default operating mode)
+
 # sht10_fpga
 
 [I] Issue status: 
