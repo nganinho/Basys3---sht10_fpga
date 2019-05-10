@@ -1,4 +1,4 @@
-#Feature
+# Feature
   1. Temperature: Yes
   2. Huminity: No
   3. Communication Error indicator: Yes 
@@ -9,12 +9,19 @@
   8. Measurement frequency: Button base trigger
   9. Status register access: No (Default operating mode)
 
-# sht10_fpga
+# Enhancement items:
+  1. Add huminity
+  2. Add LCD
+  3. Periodically measurement
+  4. Alarm indicator
+  
 
+# sht10_fpga
 [I] Issue status: 
-  CLOSED: 4, 5, 7, 8, 9
-  OPENED: 1, 2, 3, 6 
-  TOTAL/OPENED/CLOSED: 9/4/5
+  CLOSED: 4, 5, 7, 8, 9.
+  OPENED: 1, 2, 3, 6.
+  TOTAL/OPENED/CLOSED: 9/4/5.
+  
   
 [II] Issue list: 
 1. Power supply. [AI] 
