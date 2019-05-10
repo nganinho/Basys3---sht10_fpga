@@ -1,7 +1,11 @@
 # sht10_fpga
 
-Issue list: 
-
+[I] Issue status: 
+  CLOSED: 4, 5, 7, 8, 9
+  OPENED: 1, 2, 3, 6 
+  TOTAL/OPENED/CLOSED: 9/4/5
+  
+[II] Issue list: 
 1. Power supply. [AI] 
 Supply Voltage (VDD) and Ground (GND) must be decoupled with a 100 nF capacitor. 
 
@@ -13,7 +17,6 @@ To avoid signal contention the microcontroller must only drive DATA low. An exte
 3. Wiring awareness. [AI] Same as [1]
 1.9 Wiring Considerations and Signal Integrity: 
 Carrying the SCK and DATA signal parallel and in close proximity (e.g. in wires) for more than 10cm may result in cross talk and loss of communication. This may be resolved by routing VDD and/or GND between the two data signals and/or using shielded cables. Furthermore, slowing down SCK frequency will possibly improve signal integrity. Power supply pins (VDD, GND) must be decoupled with a 100nF capacitor if wires are used. Capacitor should be placed as close to the sensor as possible. Please see the Application Note “ESD, Latchup and EMC” for more information.
-
 
 4. Add reset sequence. [AI] --> Change code.
 It is unsured that the device can operate normally after starting from system reset. It should be "transmission reset" from beginning of a data communication.
@@ -33,5 +36,3 @@ It is unsured that the device can operate normally after starting from system re
 
 9. ACK1 has wrong level .
 --> It should be LOW instead of HIGH.
-
-
