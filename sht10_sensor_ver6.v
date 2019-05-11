@@ -50,7 +50,7 @@
 // DATA: HIGH - LOW - HIGH
 `define 	 TLOW	 	500
 `define 	 THIGH   	500
-`define      TCYCLE 	1000
+`define     TCYCLE 	1000
 
 module sht10_sensor(
     input wire clock,
@@ -60,8 +60,6 @@ module sht10_sensor(
 	input wire reset_conn,
 	input wire crc_off,
     output wire com_error,
-	//output reg [19:0] RH,
-	//output reg [19:0] TEMP,
 	output reg SCK,
 	inout wire SDA,
 	// display
@@ -80,14 +78,12 @@ reg     data_out;
 reg [3:0] state;
 reg [3:0] next;
 reg state_end;
-//reg [3:0] state_count;
 reg [3:0] state_cycle;
 
 reg [19:0]  clk_cnt;
 reg [3:0]   cyc_cnt;
 reg         clk_equal;
 reg         cyc_equal;
-//reg         data_in;
 reg         sda_out_en;
 
 reg cmdack;
@@ -124,7 +120,6 @@ assign get_sensor = start_ && !start__;
 
 //inout pin
 assign SDA 		= ( sda_out_en  ) ? data_out : 1'bz;
-//assign data_in 	= ( !sda_out_en ) ? SDA : 1'b0;
 
 // clk_equal
 always @ (*) begin 
@@ -249,13 +244,9 @@ end
 // next state
 always @ (*) begin 
 	case (state)
-		`IDLE		: 	if ( get_sensor == 1'b1)    next   = `CONN_RESET;
-		                  
-							//if ( reset_conn == 1'b1 ) next 	= 	`CONN_RESET;
-							//else 					  next 	= 	`TRAN_START;
-						//end
+		`IDLE		: 	if ( get_sensor == 1'b1)    next    =   `CONN_RESET;
 						else						next 	= 	`IDLE;
-		`CONN_RESET	: 	if ( state_end == 1'b1) 	next 	= 	`TRAN_START;
+		`CONN_RESET	: 	if ( state_end == 1'b1 ) 	next 	= 	`TRAN_START;
 						else						next 	= 	`CONN_RESET;
 		`TRAN_START	: 	if ( state_end == 1'b1 ) 	next 	= 	`ADD_TRAN;
 						else 						next	= 	`TRAN_START;
@@ -417,23 +408,29 @@ always @ (posedge clock or posedge reset ) begin
 	else begin
 		if (state == `DATA_ACK2 && state_end ) begin
 			if ( temp_rh_sel ) 
-				RH 		<= dat_rh*367/10000 - 15955/1000000 - 20468/10000;
+				RH 		<= dat_rh*367/10000 - dat_rh*dat_rh*16/10000000 - 20468/10000;
 			else
 				TEMP	<= dat_temp/100 - 397/10;
 		end
 	end
 end
 
-wire [3:0] first, second;
-assign first  =  TEMP%10;
-assign second =  TEMP/10; 
+wire [11:0] RH_TRUE;
+wire [3:0] first, second, third, fouth;
 
+// temporature compensation for over 25C 
+assign RH_TRUE = (TEMP - 25)*(1/100 + RH*8/100000) + RH; 
+
+assign first  =  (temp_rh_sel ) ? RH_TRUE%10 : TEMP%10;
+assign second =  (temp_rh_sel ) ? RH_TRUE/10 : TEMP/10; 
+assign third  =  (temp_rh_sel ) ? 4'hA : 4'hA;
+assign fouth  =  (temp_rh_sel ) ? 4'hB : 4'hC;
 // 7segment of display
 seven_seg display (
     clock,
     reset,
-    4'hC,
-    4'hA,
+    fouth,
+    third,
     first,
     second,
     anode,
