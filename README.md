@@ -1,6 +1,6 @@
 # Feature
   1. Temperature: Yes
-  2. Huminity: No
+  2. Huminity: Yes
   3. Communication Error indicator: Yes 
   4. Display: 7segments Leds
   5. Temp resolution: 14bit
@@ -9,11 +9,16 @@
   8. Measurement frequency: Button base trigger
   9. Status register access: No (Default operating mode)
 
+# Update
+  1. 1 second measurement automatically
+  2. Display temperature and humidity sign
+
 # Enhancement items:
-  1. Add huminity
+  1. Add huminity [Done]
   2. Add LCD
-  3. Periodically measurement
+  3. Periodically measurement [Done]
   4. Alarm indicator
+  5. Humidity compensate [Done]
   
 
 # sht10_fpga
