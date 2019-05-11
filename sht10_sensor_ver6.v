@@ -56,7 +56,7 @@ module sht10_sensor(
     input wire clock,
     input wire reset,
     input wire temp_rh_sel, // 0: temp. 1: rh
-	input wire start,
+//	input wire start,
 	input wire reset_conn,
 	input wire crc_off,
     output wire com_error,
@@ -72,7 +72,7 @@ wire [4:0] cmd_rh;
 wire [2:0] add_code;
 wire    get_sensor;
 
-reg     start_, start__;
+//reg     start_, start__;
 reg     data_out;
 
 reg [3:0] state;
@@ -105,18 +105,18 @@ assign cmd_temp = 5'b00011;
 assign cmd_rh   = 5'b00101;
  
 // get the edge of start
-always @ (posedge clock or posedge reset ) begin
-	if ( reset == 1'b1 ) 	begin 
-		start_ 	<= 1'b0;
-		start__	<= 1'b0; 
-	end
-	else begin 
-		start_ 	<= start;
-		start__ <= start_;
-	end 
-end 
+//always @ (posedge clock or posedge reset ) begin
+//	if ( reset == 1'b1 ) 	begin 
+//		start_ 	<= 1'b0;
+//		start__	<= 1'b0; 
+//	end
+//	else begin 
+//		start_ 	<= start;
+//		start__ <= start_;
+//	end 
+//end 
 
-assign get_sensor = start_ && !start__;
+//assign get_sensor = start_ && !start__;
 
 //inout pin
 assign SDA 		= ( sda_out_en  ) ? data_out : 1'bz;
@@ -244,7 +244,8 @@ end
 // next state
 always @ (*) begin 
 	case (state)
-		`IDLE		: 	if ( get_sensor == 1'b1)    next    =   `CONN_RESET;
+		//`IDLE		: 	if ( get_sensor == 1'b1)    next    =   `CONN_RESET;
+		`IDLE		: 	if ( one_second == 1'b1)    next    =   `CONN_RESET;
 						else						next 	= 	`IDLE;
 		`CONN_RESET	: 	if ( state_end == 1'b1 ) 	next 	= 	`TRAN_START;
 						else						next 	= 	`CONN_RESET;
@@ -417,6 +418,7 @@ end
 
 wire [11:0] RH_TRUE;
 wire [3:0] first, second, third, fouth;
+wire one_second;
 
 // temporature compensation for over 25C 
 assign RH_TRUE = (TEMP - 25)*(1/100 + RH*8/100000) + RH; 
@@ -425,6 +427,13 @@ assign first  =  (temp_rh_sel ) ? RH_TRUE%10 : TEMP%10;
 assign second =  (temp_rh_sel ) ? RH_TRUE/10 : TEMP/10; 
 assign third  =  (temp_rh_sel ) ? 4'hA : 4'hA;
 assign fouth  =  (temp_rh_sel ) ? 4'hB : 4'hC;
+
+one_second u_one_second (
+    clock,
+    reset,
+    one_second
+);
+
 // 7segment of display
 seven_seg display (
     clock,
